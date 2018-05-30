@@ -1,0 +1,142 @@
+﻿<Page
+    x:Class="hw2.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:hw2"
+    xmlns:md="using:hw2.Models"
+    xmlns:cvt="using:hw2"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    
+    <Page.Resources>
+        <cvt:TestConverter x:Key="converter"/>
+    </Page.Resources>
+
+
+    <Page.BottomAppBar>
+        <CommandBar>
+            <AppBarButton x:Name="AddAppBarButton" Icon="Add" Click="AddAppBarButton_Click"/>
+        </CommandBar>
+    </Page.BottomAppBar>
+
+    <Grid x:Name="All" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="VisualStateGroup">
+                <VisualState x:Name="VisualStateMin0">
+                    <VisualState.Setters>
+                        <Setter Target="InlineToDoItemViewGrid.(UIElement.Visibility)" Value="Collapsed"/>
+                        <Setter Target="ToDoListView.(Grid.ColumnSpan)" Value="2"/>
+                    </VisualState.Setters>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="1"/>
+                    </VisualState.StateTriggers>
+                </VisualState>
+                <VisualState x:Name="VisualStateMin800">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="800"/>
+                    </VisualState.StateTriggers>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Name="textBlock" Grid.Row="0" Text="Todos" Style="{StaticResource BodyTextBlockStyle}"/>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <ListView x:Name="ToDoListView" IsItemClickEnabled="True" ItemClick="TodoItem_ItemClicked"
+                      ItemsSource="{x:Bind ViewModel.AllItems}">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="md:TodoItem">
+                        <UserControl>
+                            <Grid Height="100">
+                                <!--500-->
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="image_auot_hidden">
+                                        <VisualState x:Name="gt800">
+                                            <VisualState.Setters>
+                                                <Setter Target="img.(UIElement.Visibility)" Value="Visible" ></Setter>
+                                            </VisualState.Setters>
+                                            <VisualState.StateTriggers>
+                                                <AdaptiveTrigger MinWindowWidth="600"></AdaptiveTrigger>
+                                            </VisualState.StateTriggers>
+                                        </VisualState>
+
+                                        <VisualState x:Name="lt800">
+                                            <VisualState.Setters>
+                                                <Setter Target="img.(UIElement.Visibility)" Value="Collapsed"></Setter>
+                                            </VisualState.Setters>
+                                            <VisualState.StateTriggers>
+                                                <AdaptiveTrigger MinWindowWidth="0"></AdaptiveTrigger>
+                                            </VisualState.StateTriggers>
+                                        </VisualState>
+
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <!--500-->
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="42"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="100"/>
+                                </Grid.ColumnDefinitions>
+
+                                <CheckBox x:Name="checkBox1" Grid.Column="0" VerticalAlignment="Center" Height="32" Checked="checkBox1_checked" Unchecked="checkBox1_unchecked"/>
+                                <Image x:Name="img" Source="{x:Bind img}" Grid.Column="1" Height="90" Width="150" Margin="0,3,12,7" Visibility="Collapsed"/>
+                                <TextBlock Grid.Column="2" Text="{x:Bind title}" VerticalAlignment="Top" Foreground="Black" FontWeight="Normal" FontSize="15" LineHeight="20" TextWrapping="Wrap"/>
+                                <Line x:Name="line1" Grid.Column="2" Stretch="Fill" Stroke="Yellow" StrokeThickness="2" X1="1" VerticalAlignment="Center" HorizontalAlignment="Stretch"
+                                      Visibility="{Binding Path=IsChecked,ElementName=checkBox1, Mode=OneWay,Converter={StaticResource ResourceKey=converter}}"/>
+                                <AppBarButton Grid.Column="3" Icon="Setting" IsCompact="True" VerticalAlignment="Center" Click="MenuFlyoutItem_Click">
+                                    <AppBarButton.Flyout>
+                                        <MenuFlyout>
+                                            <MenuFlyoutItem  Text="Edit" Tag="Edit" />
+                                            <MenuFlyoutItem Text="Delete" Tag="Delete" Click="OnItemClick"/>
+                                        </MenuFlyout>
+                                    </AppBarButton.Flyout>
+                                </AppBarButton>
+                            </Grid>
+                        </UserControl>
+
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+
+            <Grid x:Name="InlineToDoItemViewGrid" Grid.Column="1">
+                <ScrollViewer Margin="20">
+                    <StackPanel>
+                        <Rectangle Width="350" Height="180" Margin="4" RenderTransformOrigin="0.5,0.5">
+                                        <Rectangle.Fill>
+                                <ImageBrush x:Name="img" ImageSource="Assets/2017-06-21.png" Stretch="UniformToFill"/>
+                            </Rectangle.Fill>
+                                        <Rectangle.RenderTransform>
+                                            <CompositeTransform ScaleX="{Binding Value, ElementName=MySlider}"
+                                        ScaleY="{Binding Value, ElementName=MySlider}"/>
+                                        </Rectangle.RenderTransform>
+                                    </Rectangle>
+                        <AppBarButton x:Name="SelectPictureButton" Icon="Pictures" Label="Select" RelativePanel.AlignBottomWithPanel="True" Click="SelectButton_Click"/>
+                        <Slider Padding="50,0,50,0" Minimum="0.5" Maximum="1.0" StepFrequency="0.1" x:Name="MySlider"/>
+                                    <TextBox x:Name="Title" Width="350" Header="Title" Margin="0,12,0,0"/>
+                                    <TextBox x:Name="Detail" Width="350" Height="96" Margin="0,12,0,0"  />
+                                    <DatePicker x:Name="DueDate" Width="350" Margin="0,12,0,0" Header="Due Date" HorizontalAlignment="Center" />
+                                    <RelativePanel Width="350" Margin="0,24,0,0">
+                                        <Button x:Name="updateButton" Content="Create" Click="updateButton_Click"></Button>
+                            <Button x:Name="CancelButton" Content="Cancel" Click="cancelButton_Click" RelativePanel.AlignRightWithPanel="True"></Button>
+                                    </RelativePanel>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </Grid>
+
+        </Grid>
+    </Grid>
+                
+</Page>
